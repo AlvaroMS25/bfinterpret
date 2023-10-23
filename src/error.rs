@@ -9,7 +9,9 @@ pub enum Error {
     #[error("Pointer underflow detected at position {0}")]
     PointerUnderflow(usize),
     #[error("Pointer overflow detected at position {0}")]
-    PointerOverflow(usize)
+    PointerOverflow(usize),
+    #[error(transparent)]
+    IO(std::io::Error)
 }
 
 impl Error {
