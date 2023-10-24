@@ -4,7 +4,7 @@ use std::path::PathBuf;
 #[derive(Parser, Debug)]
 pub struct Cli {
     #[clap(subcommand)]
-    subcommand: SubCommand
+    pub subcommand: SubCommand
 }
 
 #[derive(Subcommand, Debug)]
@@ -22,8 +22,8 @@ pub enum SubCommand {
 ))]
 pub struct RunCommand {
     #[clap(long, short = 'i')]
-    input: Option<PathBuf>,
-    trailing: Vec<String>
+    pub input: Option<PathBuf>,
+    pub trailing: Vec<String>
 }
 
 #[derive(Args, Debug)]
@@ -35,8 +35,8 @@ pub struct RunCommand {
 ))]
 pub struct TranslateCommand {
     #[clap(long, short = 'i')]
-    input: Option<PathBuf>,
+    pub input: Option<PathBuf>,
     #[clap(long, short = 'o')]
-    output: Option<PathBuf>,
-    trailing: Vec<String>
+    pub output: Option<PathBuf>,
+    pub trailing: Vec<String>
 }
