@@ -4,7 +4,7 @@ use crate::instruction::{Instruction, InstructionTracker};
 
 pub struct Interpreter<'a> {
     pub instructions: &'a Vec<InstructionTracker>,
-    pub pointer: u32,
+    pub pointer: usize,
     pub data: Vec<u8>
 }
 
@@ -13,7 +13,7 @@ impl<'a> Interpreter<'a> {
         Self {
             instructions,
             pointer: 0,
-            data: Vec::new()
+            data: vec![0; 32]
         }
     }
 
@@ -29,18 +29,31 @@ impl<'a> Interpreter<'a> {
     fn increment_pointer(&mut self, idx: usize) -> Result<(), Error> {
         if let Some(value) = self.pointer.checked_add(1) {
             self.pointer = value;
+            if self.data.len() <= self.pointer {
+                self.data.push(0);
+            }
             Ok(())
         } else {
             Err(Error::PointerOverflow(idx + 1))
         }
     }
 
-    fn increase_value(&mut self, idx: usize) -> Result<(), Error> {
-        todo!()
+    fn increase_value(&mut self) -> Result<(), Error> {
+        self.data[self.pointer] = match self.data[self.pointer].checked_add(1) {
+            None => u8::MIN,
+            Some(v) => v
+        };
+
+        Ok(())
     }
 
-    fn decrease_value(&mut self, idx: usize) -> Result<(), Error> {
-        todo!()
+    fn decrease_value(&mut self) -> Result<(), Error> {
+        self.data[self.pointer] = match self.data[self.pointer].checked_sub(1) {
+            None => u8::MAX,
+            Some(v) => v
+        };
+
+        Ok(())
     }
 
     pub fn run(&mut self) -> Result<(), Error> {
@@ -49,21 +62,26 @@ impl<'a> Interpreter<'a> {
 
     fn execute<I>(&mut self, iter: I) -> Result<(), Error>
     where
-        I: Iterator<Item = InstructionTracker>
+        I: Iterator<Item = &'a InstructionTracker>
     {
-        for t in self.instructions.iter() {
+        for t in iter {
+            //println!("Pointer before instruction: {}", self.pointer);
             match &t.instruction {
                 Instruction::MoveRight => self.increment_pointer(t.position)?,
                 Instruction::MoveLeft => self.decrement_pointer(t.position)?,
-                Instruction::Inc => self.increase_value(t.position)?,
-                Instruction::Dec => self.decrease_value(t.position)?,
+                Instruction::Inc => self.increase_value()?,
+                Instruction::Dec => self.decrease_value()?,
                 Instruction::Input => {
                     let mut buf = [0u8];
                     std::io::stdin().read_exact(&mut buf)?;
                     self.data[self.pointer] = buf[0];
                 },
                 Instruction::Output => print!("{}", self.data[self.pointer] as char),
-                Instruction::Loop(inner) => self.execute(inner.iter())
+                Instruction::Loop(inner) => {
+                    while self.data[self.pointer] != 0 {
+                        self.execute(inner.iter())?;
+                    }
+                },
                 _ => continue
             }
         }

@@ -1,3 +1,5 @@
+use std::io;
+
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     #[error("Invalid character {1} at position {0}")]
@@ -10,8 +12,8 @@ pub enum Error {
     PointerUnderflow(usize),
     #[error("Pointer overflow detected at position {0}")]
     PointerOverflow(usize),
-    #[error(transparent)]
-    IO(std::io::Error)
+    #[error("Io error: {0}")]
+    IO(#[from] io::Error)
 }
 
 impl Error {
