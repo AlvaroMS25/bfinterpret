@@ -120,7 +120,11 @@ impl Translator {
         b
     }
 
-    fn default_arr() -> Vec<Vec<String>> {
+    fn default_arr() -> &'static [[&'static str; 256]; 256] {
+        crate::bfdef::DEFAULT_ARRAY
+    }
+
+    pub fn calculate_default_arr() -> Vec<Vec<String>> {
         let mut v = vec![vec![String::new(); 256]; 256];
 
         for x in 0..256isize {
