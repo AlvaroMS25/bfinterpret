@@ -15,7 +15,7 @@ pub enum SubCommand {
 
 #[derive(Args, Debug)]
 #[clap(group(
-    ArgGroup::new("input_option")
+    ArgGroup::new("run_input_option")
         .required(true)
         .multiple(true)
         .args(&["input", "trailing"])
@@ -28,7 +28,7 @@ pub struct RunCommand {
 
 #[derive(Args, Debug)]
 #[clap(group(
-    ArgGroup::new("input_option")
+    ArgGroup::new("translate_input_option")
         .required(true)
         .multiple(true)
         .args(&["input", "trailing"])
