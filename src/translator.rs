@@ -90,7 +90,25 @@ impl Translator {
     }*/
 
     pub fn run_string(&self) -> String {
-        todo!()
+        let mut chars = self.output.chars();
+        let mut last_c = 0u8;
+        let g = Self::default_arr();
+        let mut out = String::new();
+
+        for c in chars {
+            let a = &g[last_c.u()][(c as u8).u()];
+            let b = &g[0][(c as u8).u()];
+
+            if a.len() <= b.len() {
+                out.push_str(a);
+            } else {
+                out.push_str(&format!(">{b}"));
+            }
+            out.push('.');
+            last_c = c as u8;
+        }
+
+        out
     }
 
     fn repeat(s: String, times: isize) -> String {
@@ -205,6 +223,18 @@ trait ToUsize {
 }
 
 impl ToUsize for isize {
+    fn u(self) -> usize {
+        self as usize
+    }
+}
+
+impl ToUsize for u8 {
+    fn u(self) -> usize {
+        self as usize
+    }
+}
+
+impl ToUsize for i32 {
     fn u(self) -> usize {
         self as usize
     }
